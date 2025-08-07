@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-grad: linear-gradient(135deg, #0ea5ea, #5b21b6 60%, #ec4899);
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+body {
+  @apply text-white;
+  background: #06070a;
+  background-image: var(--bg-grad);
+  background-size: 200% 200%;
+  animation: bgShift 15s ease-in-out infinite;
+}
+
+@keyframes bgShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.glass {
+  @apply bg-white/10 backdrop-blur-md border border-white/20 shadow-xl;
+}

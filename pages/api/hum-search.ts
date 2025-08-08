@@ -74,4 +74,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const metadata = acrJson.metadata?.music?.[0]
     if (!metadata) {
-      retu
+      return res.status(200).json({ tracks: [], note: 'No match found by ACRCloud.' })
+    }
+
+    const artist = metadata.artists?.[0]?.name || ''
+    const title = metadata.title || ''
+    const q = `${title} ${artist}`
+
+    const tokenRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ''}/api/spotify-token`)
+    const { access_token } = await tokenRes.json()
+
+    const sp = await fetch(`https://api.spotify.com/v1/search?type=track&limit=5&q=${encodeURIComponent(q)}`, {
+      headers: { Authorization: `Bearer ${access_token}` }
+    })
+    const j = await sp.json()
+    const tracks = (j.tracks?.items || []).map((t: any) => ({
+      id: t.id,
+      name: t.name,
+      artists: t.artists.map((a: any) => a.name).join(', '),
+      album: t.album?.name || '',
+      image: t.album?.images?.[1]?.url || t.album?.images?.[0]?.url || '',
+      preview_url: t.preview_url,
+      external_url: t.external_urls?.spotify,
+    }))
+    return res.status(200).json({ tracks })
+  } catch (e: any) {
+    return res.status(500).json({ error: e?.message || 'ACRCloud failed' })
+  } finally {
+    try { if (fp) fs.unlink(fp, () => { }) } catch { }
+  }
+}

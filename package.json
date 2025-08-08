@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "form-data": "^4.0.4",
     "formidable": "^3.5.4",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.446.0",
